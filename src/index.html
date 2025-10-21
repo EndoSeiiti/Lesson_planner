@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gerador de Plano de Aula IA</title>
+  <style>
+    
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f7f7f7;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+
+    h1 {
+      color: #333;
+      margin-bottom: 20px;
+    }
+
+    .container {
+      background-color: #fff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      width: 90%;
+      max-width: 500px;
+      box-sizing: border-box;
+    }
+    
+    input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      box-sizing: border-box;
+    }
+
+    button {
+      background-color: #007bff;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      width: 100%;
+      transition: background-color 0.3s;
+    }
+
+    button:hover:not(:disabled) {
+      background-color: #0056b3;
+    }
+
+    button:disabled {
+      background-color: #aaa;
+      cursor: not-allowed;
+    }
+
+    #status-message {
+      margin-top: 15px;
+      padding: 10px;
+      border-radius: 5px;
+      text-align: center;
+    }
+
+    .loading { background-color: #fff3cd; color: #856404; }
+    .success { background-color: #d4edda; color: #155724; }
+    .error { background-color: #f8d7da; color: #721c24; }
+    
+    #response-output {
+        margin-top: 20px;
+        padding: 15px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        background-color: #f9f9f9;
+        white-space: pre-wrap; /* Preserva formatação do JSON */
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Gerador de Plano de Aula</h1>
+    
+    <label for="tema-input">O que o professor quer ensinar?</label>
+    <input type="text" id="tema-input" placeholder="Ex: Inteligencia artificial">
+    <input type="text" id="duracao-input" placeholder="Ex: 30">
+    <input type="text" id="serie-input" placeholder="Ex: terceira serie">
+    <input type="text" id="componente-input" placeholder="Ex: matematica">
+    <input type="text" id="professor-input" placeholder="Ex: Maria">
+    
+    <button id="send-button">Gerar Plano</button>
+    
+    <div id="status-message"></div>
+  </div>
+  
+  <div class="container" style="margin-top: 20px; display: none;" id="response-container">
+    <h2>Plano Gerado (JSON Bruto)</h2>
+    <pre id="response-output"></pre>
+  </div>
+
+<script>
+    
+    const temaInput = document.getElementById('tema-input');
+    const duracaoInput = document.getElementById('duracao-input');
+    const serieInput = document.getElementById('serie-input');
+    const componenteInput = document.getElementById('componente-input');
+    const sendButton = document.getElementById('send-button');
+    const statusMessage = document.getElementById('status-message');
+    const responseOutput = document.getElementById('response-output');
+    const responseContainer = document.getElementById('response-container');
+    const professorInput = document.getElementById('professor-input'); 
+
+    function updateStatus(type, message) {
+        statusMessage.className = type; 
+        statusMessage.textContent = message;
+    }
+
+   
+    async function enviarTexto() {
+      if (!temaInputTratado || !duracaoInput || !serieInput || !componenteInput || !professorInput) {
+        updateStatus('error', 'Por favor, digite todos o campos');
+        return;
+      }
+      
+      const temaInputTratado = temaInput.value.trim();
+      const duracaoInputTratado = duracaoInput.value.trim();
+      const serieInputTratado = serieInput.value.trim();
+      const componenteInputTratado= componenteInput.value.trim();
+      const professorInputTratado = professorInput.value.trim();
+      
+
+      
+        sendButton.disabled = true;
+        updateStatus('loading', 'Gerando plano');
+        responseContainer.style.display = 'none';
+
+        try {
+         
+            const dataToSend = {
+                tema: temaInputado,
+                serie_ano: serieInputado,
+                duracao:duracaoInputado,
+                componente_curricular:componenteInputado,
+                professor:professorInputado
+            };
+
+            const response = await fetch('/api/gerar', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(dataToSend),
+            });
+
+            const data = await response.json();
+
+            
+            if (!response.ok) {
+                throw new Error(data.error || 'Erro no servidor.');
+            }
+            
+            
+            updateStatus('success');
+            
+            
+            responseOutput.textContent = JSON.stringify(data.plano_completo, null, 2);
+            responseContainer.style.display = 'block';
+
+            } catch (error) {
+            console.error("Erro ", error);
+            updateStatus('error', `${error.message}`);
+        } finally {
+           
+            sendButton.disabled = false;
+            sendButton.textContent = 'Gerar Plano';
+        }
+    }
+
+    
+    sendButton.addEventListener('click', enviarTexto);
+</script>
+</body>
+</html>
