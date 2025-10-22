@@ -88,9 +88,9 @@
     
     <label for="tema-input">O que o professor quer ensinar?</label>
     <input type="text" id="tema-input" placeholder="Ex: Inteligencia artificial">
-    <input type="text" id="duracao-input" placeholder="Ex: 30">
-    <input type="text" id="serie-input" placeholder="Ex: terceira serie">
-    <input type="text" id="componente-input" placeholder="Ex: matematica">
+    <input type="text" id="duracao-input" placeholder="Apenas numero em minutos">
+    <input type="text" id="serie-input" placeholder="Ex: Terceira serie">
+    <input type="text" id="componente-input" placeholder="Ex: Matematica">
     <input type="text" id="professor-input" placeholder="Ex: Maria">
     
     <button id="send-button">Gerar Plano</button>
@@ -122,7 +122,7 @@
 
    
     async function enviarTexto() {
-      if (!temaInputTratado || !duracaoInput || !serieInput || !componenteInput || !professorInput) {
+      if (!temaInput || !duracaoInput || !serieInput || !componenteInput || !professorInput) {
         updateStatus('error', 'Por favor, digite todos o campos');
         return;
       }
@@ -142,11 +142,11 @@
         try {
          
             const dataToSend = {
-                tema: temaInputado,
-                serie_ano: serieInputado,
-                duracao:duracaoInputado,
-                componente_curricular:componenteInputado,
-                professor:professorInputado
+                tema: temaInputTratado,
+                serie_ano: serieInputTratado,
+                duracao:duracaoInputTratado,
+                componente_curricular:componenteInputTratado,
+                professor:professorInputTratado
             };
 
             const response = await fetch('/api/gerar', {

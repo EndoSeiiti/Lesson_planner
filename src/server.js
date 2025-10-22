@@ -9,14 +9,11 @@ const { salvarPlano } = require('./db.service');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Middlewares
 app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Serve o frontend (index.html e outros arquivos estáticos)
 app.use(express.static(path.join(__dirname))); 
 
-// --- ROTA PRINCIPAL (POST) ---
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
@@ -30,17 +27,16 @@ app.post('/api/gerar', async (req, res) => {
     }
 
     try {
-        // 1. Geração pela IA
+        
         const planoGeradoObjeto = await geradorPlano(inputs);
         
-        // 2. Salvamento no Supabase
+        
         const novoPlanoSalvo = await salvarPlano(inputs, planoGeradoObjeto);
 
-        // 3. Resposta de Sucesso
+        
         res.status(200).json({ 
             message: 'Plano gerado e salvo com sucesso!',
-            plano_completo: novoPlanoSalvo.plano, // Retorna o campo 'plano' salvo
-            id: novoPlanoSalvo.id
+            plano_completo: novoPlanoSalvo, // Retorna o campo 'plano' salvo
         });
 
     } catch (error) {
@@ -49,7 +45,6 @@ app.post('/api/gerar', async (req, res) => {
     }
 });
 
-// --- INICIALIZAÇÃO ---
 
 app.listen(PORT, () => {
     console.log(`Servidor rodando em http://localhost:${PORT}`);
